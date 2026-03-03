@@ -1,5 +1,5 @@
-use tauri::{Manager, State};
 use bollard::Docker;
+use tauri::{Manager, State};
 mod docker;
 use docker::containers::AppContainer;
 
@@ -8,9 +8,7 @@ pub struct AppState {
 }
 
 #[tauri::command]
-async fn list_containers(
-    state: State<'_, AppState>,
-) -> Result<Vec<AppContainer>, String> {
+async fn list_containers(state: State<'_, AppState>) -> Result<Vec<AppContainer>, String> {
     docker::containers::list_containers(&state.docker).await
 }
 
@@ -18,7 +16,8 @@ async fn list_containers(
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-            let docker =  tauri::async_runtime::block_on(docker::client::initialize_docker_client())?;
+            let docker =
+                tauri::async_runtime::block_on(docker::client::initialize_docker_client())?;
             app.manage(AppState { docker });
             Ok(())
         })
