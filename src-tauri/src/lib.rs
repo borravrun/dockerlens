@@ -16,10 +16,18 @@ async fn list_containers(state: State<'_, AppState>) -> Result<Vec<AppContainer>
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-            let docker =
-                tauri::async_runtime::block_on(docker::client::initialize_docker_client())?;
-            app.manage(AppState { docker });
-            Ok(())
+            match tauri::async_runtime::block_on(
+                docker::client::initialize_docker_client()
+            ) {
+                Ok(docker) => {
+                    app.manage(AppState { docker });
+                    Ok(())
+                }
+                Err(e) => {
+                    println!("Docker not running: {}", e);
+                    Ok(()) // Don't crash app
+                }
+            }
         })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![list_containers])
