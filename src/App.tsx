@@ -1,37 +1,17 @@
-import { FiRefreshCcw, FiPlay, FiStopCircle, FiDelete } from "react-icons/fi";
+import { FiRefreshCcw} from "react-icons/fi";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "./components/ui/table";
-import { listenContainers } from "./lib/invokes";
-import { useEffect, useState } from "react";
 import { Button } from "./components/ui/button";
 import ContainerRow from "./components/container-row";
-import { Container } from "./lib/types";
+import { useContainerContext } from "./store/container-context";
 
 export default function App() {
-  const [loading, setLoading] = useState(false);
-  const [containers, setContainers] = useState<Container[]>([]);
-
-  const fetchContainers = async () => {
-    try {
-      setLoading(true);
-      const data = await listenContainers();
-      setContainers(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchContainers();
-  }, []);
+  const { containers, loading, refresh } = useContainerContext();
 
   return (
     <div className="bg-[#1C1C1C] w-full h-screen">
@@ -43,11 +23,7 @@ export default function App() {
             local container ({containers.length})
           </span>
         </div>
-        <Button
-          size={"icon-lg"}
-          className="action-btn"
-          onClick={fetchContainers}
-        >
+        <Button size={"icon-lg"} className="action-btn" onClick={refresh}>
           <FiRefreshCcw
             className={`text-[#E8E8E6] ${loading ? "animate-spin" : ""}`}
           />
@@ -60,7 +36,7 @@ export default function App() {
               <TableHead className="w-7.5"></TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Image</TableHead>
-              <TableHead>Stateus</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="text-end">Actions</TableHead>
             </TableRow>
           </TableHeader>

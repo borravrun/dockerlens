@@ -1,4 +1,7 @@
 use bollard::query_parameters::ListContainersOptions;
+use bollard::query_parameters::{
+    RemoveContainerOptions, RestartContainerOptions, StartContainerOptions, StopContainerOptions,
+};
 use bollard::Docker;
 use serde::Serialize;
 
@@ -55,4 +58,42 @@ pub async fn list_containers(docker: &Docker) -> Result<Vec<AppContainer>, Strin
         .collect();
 
     Ok(app_containers)
+}
+
+pub async fn container_action(docker: &Docker, id: String, action: String) -> Result<(), String> {
+    match action.as_str() {
+        "start" => {
+            docker
+                .start_container(&id, None::<StartContainerOptions>)
+                .await
+                .map_err(|e| e.to_string())?;
+        }
+        "stop" => {
+            docker
+                .stop_container(&id, None::<StopContainerOptions>)
+                .await
+                .map_err(|e| e.to_string())?;
+        }
+        "restart" => {
+            docker
+                .restart_container(&id, None::<RestartContainerOptions>)
+                .await
+                .map_err(|e| e.to_string())?;
+        }
+        "remove" => {
+            docker
+                .remove_container(
+                    &id,
+                    Some(RemoveContainerOptions {
+                        force: true,
+                        ..Default::default()
+                    }),
+                )
+                .await
+                .map_err(|e| e.to_string())?;
+        }
+        _ => return Err("Invalid container action".into()),
+    }
+
+    Ok(())
 }
