@@ -64,7 +64,7 @@ export default function App() {
         </Table>
       </main>
       <Sheet open={isOpen} onOpenChange={setIsOpen} >
-        <SheetContent className="w-3/5 bg-primary border-0" showCloseButton={false}>
+        <SheetContent className="w-3/5 bg-primary border-l border-[#333332]" showCloseButton={false}>
           <ContainerDrawer selectedContainer={selectedContainer} />
         </SheetContent>
       </Sheet>

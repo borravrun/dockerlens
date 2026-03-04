@@ -5,6 +5,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+* {
+  outline: none;
+}
+
 @theme inline {
     --color-primary: #1C1C1C;
     --font-inter: "Inter", sans-serif;
