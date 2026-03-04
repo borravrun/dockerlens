@@ -47,6 +47,7 @@ pub async fn list_containers(docker: &Docker) -> Result<Vec<AppContainer>, Strin
 
             let status = container.status.unwrap_or_default();
 
+
             AppContainer {
                 id,
                 name,

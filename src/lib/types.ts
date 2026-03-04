@@ -20,7 +20,9 @@ export interface ContainerActions {
 
 export interface ContainerContextType {
   containers: Container[];
+  selectedContainer: Container;
   loading: boolean;
   refresh: () => Promise<void>;
   action: (action: ContainerActions) => Promise<void>;
+  setSelectedContainer: (container: Container) => void;
 }

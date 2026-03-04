@@ -12,6 +12,9 @@ const ContainerContext = createContext<ContainerContextType | null>(null);
 export function ContainerProvider({ children }: { children: React.ReactNode }) {
   const [containers, setContainers] = useState<Container[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedContainer, setSelectedContainer] = useState<Container | null>(
+    null,
+  );
 
   const fetchContainers = async () => {
     try {
@@ -70,6 +73,8 @@ export function ContainerProvider({ children }: { children: React.ReactNode }) {
         loading,
         refresh: fetchContainers,
         action,
+        selectedContainer,
+        setSelectedContainer,
       }}
     >
       {children}

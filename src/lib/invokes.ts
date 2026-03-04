@@ -3,6 +3,7 @@ import { Container, ContainerActions } from "./types";
 
 export async function listenContainers(): Promise<Container[]> {
   const connections = (await invoke("list_containers")) as Container[];
+  console.log(connections);
   return connections;
 }
 

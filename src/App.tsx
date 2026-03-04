@@ -1,4 +1,4 @@
-import { FiRefreshCcw} from "react-icons/fi";
+import { FiRefreshCcw } from "react-icons/fi";
 import {
   Table,
   TableBody,
@@ -9,12 +9,21 @@ import {
 import { Button } from "./components/ui/button";
 import ContainerRow from "./components/container-row";
 import { useContainerContext } from "./store/container-context";
+import {
+  Sheet,
+  SheetContent,
+} from "./components/ui/sheet";
+import { useState } from "react";
+import ContainerDrawer from "./components/container-drawer";
 
 export default function App() {
-  const { containers, loading, refresh } = useContainerContext();
+  const [isOpen, setIsOpen] = useState(false);
+  const { containers, loading, refresh, selectedContainer, setSelectedContainer } = useContainerContext();
+  
+  
 
   return (
-    <div className="bg-[#1C1C1C] w-full h-screen">
+    <div className="bg-primary w-screen h-screen">
       <header className="flex items-center justify-between px-12 py-6 border-b border-[#333332]">
         <div className="flex gap-3">
           <span className="text-[#E8E8E6] text-xl font-bold">Dockerlens</span>
@@ -42,11 +51,23 @@ export default function App() {
           </TableHeader>
           <TableBody>
             {containers.map((container) => (
-              <ContainerRow key={container.id} container={container} />
+              <ContainerRow
+                key={container.id}
+                container={container}
+                onOpen={() => {
+                  setSelectedContainer((container));
+                  setIsOpen(true);
+                }}
+              />
             ))}
           </TableBody>
         </Table>
       </main>
+      <Sheet open={isOpen} onOpenChange={setIsOpen} >
+        <SheetContent className="w-3/5 bg-primary border-0" showCloseButton={false}>
+          <ContainerDrawer selectedContainer={selectedContainer} />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
