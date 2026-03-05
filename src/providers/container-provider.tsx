@@ -15,6 +15,7 @@ import {
 export function ContainerProvider({ children }: { children: React.ReactNode }) {
   const [containers, setContainers] = useState<AppContainer[]>([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const [selectedContainer, setSelectedContainerState] =
     useState<AppContainer | null>(null);
   const [containerDetails, setContainerDetails] =
@@ -80,9 +81,20 @@ export function ContainerProvider({ children }: { children: React.ReactNode }) {
     };
   }, [fetchContainers, updateContainers]);
 
+  const filtered = useMemo(() => {
+    if (!search) return containers;
+    const q = search.toLowerCase();
+    return containers.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.image.toLowerCase().includes(q) ||
+        c.id.toLowerCase().includes(q),
+    );
+  }, [containers, search]);
+
   const listValue = useMemo(
-    () => ({ containers, loading, refresh: fetchContainers }),
-    [containers, loading, fetchContainers],
+    () => ({ containers, filtered, loading, search, setSearch, refresh: fetchContainers }),
+    [containers, filtered, loading, search, fetchContainers],
   );
 
   const selectedValue = useMemo(

@@ -7,7 +7,10 @@ import type {
 
 export interface ContainerListContextType {
   containers: AppContainer[];
+  filtered: AppContainer[];
   loading: boolean;
+  search: string;
+  setSearch: (query: string) => void;
   refresh: () => Promise<void>;
 }
 

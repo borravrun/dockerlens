@@ -16,11 +16,13 @@ interface ContainerTableProps {
 export default function ContainerTable({
   onSelectContainer,
 }: ContainerTableProps) {
-  const { containers, loading } = useContainerList();
+  const { filtered, loading, search } = useContainerList();
 
-  if (containers.length === 0 && !loading) {
+  if (filtered.length === 0 && !loading) {
     return (
-      <p className="text-[#525252] text-center py-12">No containers found</p>
+      <p className="text-[#525252] text-center py-12">
+        {search ? "No containers match your search" : "No containers found"}
+      </p>
     );
   }
 
@@ -36,7 +38,7 @@ export default function ContainerTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {containers.map((container) => (
+        {filtered.map((container) => (
           <ContainerRow
             key={container.id}
             container={container}
