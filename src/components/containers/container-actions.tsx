@@ -1,16 +1,17 @@
-import { TableCell } from "./ui/table";
-import { Button } from "./ui/button";
+import { TableCell } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { FiDelete, FiPlay, FiRefreshCcw, FiStopCircle } from "react-icons/fi";
-import { AppContainer, Actions, ContainerActions } from "@/lib/types";
-import { useContainerContext } from "@/store/container-context";
-import { MouseEvent } from "react";
+import type { AppContainer, ContainerActions } from "@/types";
+import { Actions } from "@/types";
+import { useContainerAction } from "@/hooks";
+import { memo, type MouseEvent } from "react";
 
-export default function ContainerAction({
+const ContainerAction = memo(function ContainerAction({
   container,
 }: {
   container: AppContainer;
 }) {
-  const { action } = useContainerContext();
+  const { action } = useContainerAction();
 
   function onClick(e: MouseEvent, containerActions: ContainerActions) {
     e.stopPropagation();
@@ -64,4 +65,6 @@ export default function ContainerAction({
       </Button>
     </TableCell>
   );
-}
+});
+
+export default ContainerAction;

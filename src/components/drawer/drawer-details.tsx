@@ -1,4 +1,4 @@
-import { useContainerContext } from "@/store/container-context";
+import { useSelectedContainer } from "@/hooks";
 
 function formatDate(dateString?: string): string {
   if (!dateString) return "N/A";
@@ -6,10 +6,10 @@ function formatDate(dateString?: string): string {
 }
 
 export default function DrawerDetails() {
-  const { containerDetails: details } = useContainerContext();
+  const { containerDetails: details } = useSelectedContainer();
 
   return (
-    <div className="flex flex-col gap-4 px-4 pb-4 border-b border-b-[#333332]">
+    <div className="flex flex-col gap-4 px-4 py-2 border-b border-b-[#333332]">
       <h2 className="text-sm font-inter font-semibold text-[#737373] uppercase">
         Container Details
       </h2>

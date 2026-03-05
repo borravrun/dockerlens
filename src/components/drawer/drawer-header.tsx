@@ -1,15 +1,15 @@
-import { SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet";
-import { Badge } from "./ui/badge";
+import { SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
 import DrawerActions from "./drawer-actions";
 import { useEffect } from "react";
-import { useContainerContext } from "@/store/container-context";
+import { useSelectedContainer } from "@/hooks";
 
 export default function DrawerHeader({ id }: { id: string }) {
-  const { selectedContainer, fetchContainerDetails } = useContainerContext();
+  const { selectedContainer, fetchContainerDetails } = useSelectedContainer();
 
   useEffect(() => {
     if (id) fetchContainerDetails(id);
-  }, [id]);
+  }, [id, fetchContainerDetails]);
 
   return (
     <SheetHeader className="border-b border-b-[#333332]">

@@ -1,14 +1,17 @@
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { FiDelete, FiPlay, FiRefreshCcw, FiStopCircle } from "react-icons/fi";
-import { AppContainer, Actions, ContainerActions } from "@/lib/types";
-import { useContainerContext } from "@/store/container-context";
+import type { AppContainer, ContainerActions } from "@/types";
+import { Actions } from "@/types";
+import { useContainerAction, useContainerList } from "@/hooks";
+import { memo } from "react";
 
-export default function DrawerActions({
+const DrawerActions = memo(function DrawerActions({
   container,
 }: {
   container: AppContainer;
 }) {
-  const { action, loading } = useContainerContext();
+  const { action } = useContainerAction();
+  const { loading } = useContainerList();
 
   function onClick(containerActions: ContainerActions) {
     action(containerActions);
@@ -19,7 +22,7 @@ export default function DrawerActions({
       {container.state !== "running" && (
         <Button
           disabled={loading}
-          className="action-btn bg-[#262626] hover:bg-green-500/10 "
+          className="action-btn bg-[#262626] hover:bg-green-500/10"
           onClick={() => onClick({ id: container.id, action: Actions.START })}
         >
           <FiPlay className="text-[#E8E8E6] group-hover:text-green-500" />
@@ -59,4 +62,6 @@ export default function DrawerActions({
       </Button>
     </div>
   );
-}
+});
+
+export default DrawerActions;

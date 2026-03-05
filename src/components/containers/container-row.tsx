@@ -1,19 +1,21 @@
-import { AppContainer } from "@/lib/types";
-import { TableCell, TableRow } from "./ui/table";
+import type { AppContainer } from "@/types";
+import { TableCell, TableRow } from "@/components/ui/table";
 import ContainerAction from "./container-actions";
+import { memo, useCallback } from "react";
 
-export default function ContainerRow({
+const ContainerRow = memo(function ContainerRow({
   container,
   onOpen,
 }: {
   container: AppContainer;
-  onOpen: () => void;
+  onOpen: (container: AppContainer) => void;
 }) {
+  const handleClick = useCallback(() => onOpen(container), [onOpen, container]);
+
   return (
     <TableRow
-      key={container.id}
       className="[&>td]:text-center border-b-[#333332] hover:bg-transparent cursor-pointer"
-      onClick={onOpen}
+      onClick={handleClick}
     >
       <TableCell
         className={`text-3xl ${container.state === "running" ? "text-green-500" : "text-red-500"}`}
@@ -30,4 +32,6 @@ export default function ContainerRow({
       <ContainerAction container={container} />
     </TableRow>
   );
-}
+});
+
+export default ContainerRow;

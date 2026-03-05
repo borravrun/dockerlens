@@ -14,7 +14,6 @@ pub struct AppContainer {
     pub status: String,
 }
 
-
 #[derive(Serialize)]
 pub struct ContainerDetails {
     pub id: String,
@@ -27,6 +26,7 @@ pub struct ContainerDetails {
     pub mounts: Vec<String>,
     pub restart_policy: String,
 }
+
 pub async fn list_containers(docker: &Docker) -> Result<Vec<AppContainer>, String> {
     let options = ListContainersOptions {
         all: true,
@@ -59,7 +59,6 @@ pub async fn list_containers(docker: &Docker) -> Result<Vec<AppContainer>, Strin
             let state = container.state.map(|s| s.to_string()).unwrap_or_default();
 
             let status = container.status.unwrap_or_default();
-
 
             AppContainer {
                 id,

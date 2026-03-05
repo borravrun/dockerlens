@@ -2,12 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import { ContainerProvider } from "./store/container-context";
+import { DockerStatusProvider } from "@/providers";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ContainerProvider>
+    <DockerStatusProvider>
       <App />
-    </ContainerProvider>
+    </DockerStatusProvider>
   </React.StrictMode>,
 );

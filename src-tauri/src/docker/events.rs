@@ -7,12 +7,23 @@ use tauri::{AppHandle, Emitter};
 use super::containers::list_containers;
 
 pub async fn listen_docker_events(docker: Docker, app: AppHandle) {
-    // Send initial container list immediately
-    if let Ok(containers) = list_containers(&docker).await {
-        let _ = app.emit("containers-changed", &containers);
-    }
-
     loop {
+        // Check Docker connectivity
+        if docker.ping().await.is_err() {
+            let _ = app.emit("docker-status", false);
+            tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+            continue;
+        }
+
+        // Docker is connected
+        let _ = app.emit("docker-status", true);
+
+        // Send current container list
+        if let Ok(containers) = list_containers(&docker).await {
+            let _ = app.emit("containers-changed", &containers);
+        }
+
+        // Subscribe to Docker events
         let mut filters = HashMap::new();
         filters.insert("type".to_string(), vec!["container".to_string()]);
 
@@ -27,8 +38,6 @@ pub async fn listen_docker_events(docker: Docker, app: AppHandle) {
             match event {
                 Ok(ev) => {
                     let action = ev.action.unwrap_or_default();
-                    println!("Docker event: {}", action);
-
                     match action.as_str() {
                         "start" | "stop" | "die" | "kill" | "pause" | "unpause"
                         | "destroy" | "create" | "rename" | "restart" => {
@@ -41,13 +50,13 @@ pub async fn listen_docker_events(docker: Docker, app: AppHandle) {
                 }
                 Err(e) => {
                     eprintln!("Docker events stream error: {}", e);
-                    break; // Break inner loop to reconnect
+                    break;
                 }
             }
         }
 
-        // Wait before reconnecting to avoid tight loop on persistent errors
+        // Stream ended — Docker may be disconnected
+        let _ = app.emit("docker-status", false);
         tokio::time::sleep(std::time::Duration::from_secs(3)).await;
-        println!("Reconnecting to Docker events stream...");
     }
 }

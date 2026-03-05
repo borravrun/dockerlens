@@ -25,13 +25,20 @@ export interface ContainerActions {
   action: Actions;
 }
 
-export interface ContainerContextType {
-  containers: AppContainer[];
-  selectedContainer: AppContainer | null;
-  containerDetails: ContainerDetails | null;
-  loading: boolean;
-  refresh: () => Promise<void>;
-  action: (action: ContainerActions) => Promise<void>;
-  setSelectedContainer: (container: AppContainer | null) => void;
-  fetchContainerDetails: (id: string) => Promise<void>;
+export interface LogEntry {
+  stream: string;
+  message: string;
+}
+
+export interface ContainerStats {
+  cpu_percent: number;
+  memory_usage: number;
+  memory_limit: number;
+  memory_percent: number;
+  network_rx: number;
+  network_tx: number;
+  block_read: number;
+  block_write: number;
+  pids: number;
+  timestamp: number;
 }

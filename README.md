@@ -1,93 +1,78 @@
-# Dockerlens Roadmap
+# Dockerlens
 
-Dockerlens is a lightweight, native desktop UI for managing Docker containers.
-Built with **Rust + Tauri + React**, the goal is to provide a **fast and minimal Docker control panel**.
+A lightweight, native desktop app for managing Docker containers. Built with **Rust + Tauri + React**.
 
----
+## Features
 
-## Phase 1 — Core Container Control
+- **Container Management** — Start, stop, restart, and remove containers
+- **Real-time Events** — Automatic UI updates via Docker event stream
+- **Live Logs** — Stream container logs with stdout/stderr coloring
+- **Resource Stats** — Real-time CPU, memory, network, and I/O charts
+- **Container Details** — Inspect ports, mounts, restart policy, and more
+- **Docker Status Detection** — Graceful handling when Docker is not running
 
-**Status:** Completed
+## Tech Stack
 
-* [x] Connect to Docker daemon
-* [x] List containers
-* [x] Start container
-* [x] Stop container
-* [x] Restart container
-* [x] Remove container
-* [x] Container context for global state
-* [x] Auto refresh containers
-* [x] Container actions in UI
-* [x] Minimal container table interface
+| Layer    | Technology                         |
+| -------- | ---------------------------------- |
+| Backend  | Rust, Bollard, Tokio               |
+| Frontend | React 19, TypeScript, Recharts     |
+| Desktop  | Tauri v2                           |
+| Styling  | Tailwind CSS v4, shadcn/ui         |
 
----
+## Getting Started
 
-## Phase 2 — Container Observability
+### Prerequisites
 
-**Status:** In Progress
+- [Rust](https://rustup.rs/)
+- [Node.js](https://nodejs.org/) (v18+)
+- [Bun](https://bun.sh/) or npm
+- [Docker](https://www.docker.com/) running locally
 
-* [ ] Container details drawer
-* [ ] Inspect container information
-* [ ] Live container logs viewer
-* [ ] Auto-follow logs
-* [ ] Docker event listener
-* [ ] Container search / filter
-* [ ] Container resource stats (CPU / memory)
+### Development
 
----
+```bash
+bun install
+bun run tauri dev
+```
 
-## Phase 3 — Docker Resources
+### Build
 
-**Status:** Planned
+```bash
+bun run tauri build
+```
 
-* [ ] Images management
-* [ ] Pull image
-* [ ] Remove image
-* [ ] Inspect image
-* [ ] Volumes management
-* [ ] Networks management
+## Project Structure
 
----
+```
+src/                  # React frontend
+├── components/       # UI components (containers, drawer, layout)
+├── hooks/            # Custom React hooks
+├── providers/        # Context providers (containers, docker status)
+├── services/         # Tauri invoke wrappers
+├── types/            # TypeScript interfaces
+└── lib/              # Utilities
 
-## Phase 4 — Developer Tools
+src-tauri/src/        # Rust backend
+├── docker/
+│   ├── client.rs     # Docker connection
+│   ├── containers.rs # Container CRUD operations
+│   ├── events.rs     # Real-time Docker event listener
+│   ├── logs.rs       # Log streaming with cancellation
+│   └── stats.rs      # Stats streaming (CPU, memory, network, I/O)
+└── lib.rs            # Tauri commands and app setup
+```
 
-**Status:** Planned
+## Roadmap
 
-* [ ] Container terminal
-* [ ] Log filtering and search
-* [ ] Download container logs
-* [ ] Docker Compose project grouping
-
----
-
-## Phase 5 — Advanced Features
-
-**Status:** Planned
-
-* [ ] Multi-Docker host support
-* [ ] Container metrics dashboard
-* [ ] Container file explorer
-* [ ] Resource usage alerts
-
----
-
-## Phase 6 — Productization
-
-**Status:** Planned
-
-* [ ] Auto update system
-* [ ] Settings page
-* [ ] Keyboard shortcuts
-* [ ] Performance optimizations
-* [ ] Documentation and onboarding
-
----
-
-## Goals
-
-Dockerlens aims to be:
-
-* Fast startup
-* Lightweight binary
-* Minimal interface
-* Developer-focused Docker control panel
+- [x] Core container control (start, stop, restart, remove)
+- [x] Real-time Docker event listener
+- [x] Container details drawer
+- [x] Live log streaming
+- [x] Resource stats with charts
+- [x] Docker engine status detection
+- [ ] Container search / filter
+- [ ] Images management
+- [ ] Volumes & networks management
+- [ ] Container terminal
+- [ ] Docker Compose project grouping
