@@ -1,26 +1,42 @@
-import { container_action, listenContainers } from "@/lib/invokes";
+import { containerAction, getContainers, getContainer } from "@/lib/invokes";
 import {
-  Actions,
-  Container,
+  AppContainer,
   ContainerActions,
   ContainerContextType,
+  ContainerDetails,
 } from "@/lib/types";
-import { createContext, useContext, useEffect, useState } from "react";
+import { listen } from "@tauri-apps/api/event";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const ContainerContext = createContext<ContainerContextType | null>(null);
 
 export function ContainerProvider({ children }: { children: React.ReactNode }) {
-  const [containers, setContainers] = useState<Container[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [selectedContainer, setSelectedContainer] = useState<Container | null>(
-    null,
-  );
+  const [containers, setContainers] = useState<AppContainer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedContainer, setSelectedContainer] =
+    useState<AppContainer | null>(null);
+  const [containerDetails, setContainerDetails] =
+    useState<ContainerDetails | null>(null);
+  const selectedContainerRef = useRef<AppContainer | null>(null);
+
+  useEffect(() => {
+    selectedContainerRef.current = selectedContainer;
+  }, [selectedContainer]);
+
+  const updateContainers = (data: AppContainer[]) => {
+    setContainers(data);
+    const current = selectedContainerRef.current;
+    if (current) {
+      const updated = data.find((c) => c.id === current.id);
+      setSelectedContainer(updated ?? null);
+      if (!updated) setContainerDetails(null);
+    }
+  };
 
   const fetchContainers = async () => {
     try {
       setLoading(true);
-      const data = await listenContainers();
-      setContainers(data);
+      updateContainers(await getContainers());
     } catch (err) {
       console.error(err);
     } finally {
@@ -28,42 +44,28 @@ export function ContainerProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  async function action(containerActions: ContainerActions) {
-    switch (containerActions.action) {
-      case "start":
-        await container_action({
-          id: containerActions.id,
-          action: Actions.START,
-        });
-        break;
-      case "stop":
-        await container_action({
-          id: containerActions.id,
-          action: Actions.STOP,
-        });
-        break;
-      case "restart":
-        await container_action({
-          id: containerActions.id,
-          action: Actions.RESTART,
-        });
-        break;
-      case "remove":
-        await container_action({
-          id: containerActions.id,
-          action: Actions.REMOVE,
-        });
-        break;
+  const fetchContainerDetails = async (id: string) => {
+    try {
+      setContainerDetails(await getContainer(id));
+    } catch (err) {
+      console.error(err);
     }
-    await fetchContainers();
-  }
+  };
+
+  const action = async (containerActions: ContainerActions) => {
+    await containerAction(containerActions);
+  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchContainers();
-    }, 5000);
+    fetchContainers();
 
-    return () => clearInterval(interval);
+    const unlisten = listen<AppContainer[]>("containers-changed", (event) => {
+      updateContainers(event.payload);
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
   }, []);
 
   return (
@@ -74,7 +76,9 @@ export function ContainerProvider({ children }: { children: React.ReactNode }) {
         refresh: fetchContainers,
         action,
         selectedContainer,
+        containerDetails,
         setSelectedContainer,
+        fetchContainerDetails,
       }}
     >
       {children}

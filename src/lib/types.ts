@@ -1,9 +1,16 @@
-export interface Container {
+export interface AppContainer {
   id: string;
   name: string;
   image: string;
   state: string;
   status: string;
+}
+
+export interface ContainerDetails extends AppContainer {
+  created: string;
+  ports: string[];
+  mounts: string[];
+  restart_policy: string;
 }
 
 export enum Actions {
@@ -19,10 +26,12 @@ export interface ContainerActions {
 }
 
 export interface ContainerContextType {
-  containers: Container[];
-  selectedContainer: Container;
+  containers: AppContainer[];
+  selectedContainer: AppContainer | null;
+  containerDetails: ContainerDetails | null;
   loading: boolean;
   refresh: () => Promise<void>;
   action: (action: ContainerActions) => Promise<void>;
-  setSelectedContainer: (container: Container) => void;
+  setSelectedContainer: (container: AppContainer | null) => void;
+  fetchContainerDetails: (id: string) => Promise<void>;
 }

@@ -1,14 +1,14 @@
 import { TableCell } from "./ui/table";
 import { Button } from "./ui/button";
 import { FiDelete, FiPlay, FiRefreshCcw, FiStopCircle } from "react-icons/fi";
-import { Container, Actions, ContainerActions } from "@/lib/types";
+import { AppContainer, Actions, ContainerActions } from "@/lib/types";
 import { useContainerContext } from "@/store/container-context";
 import { MouseEvent } from "react";
 
 export default function ContainerAction({
   container,
 }: {
-  container: Container;
+  container: AppContainer;
 }) {
   const { action } = useContainerContext();
 

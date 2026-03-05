@@ -9,18 +9,20 @@ import {
 import { Button } from "./components/ui/button";
 import ContainerRow from "./components/container-row";
 import { useContainerContext } from "./store/container-context";
-import {
-  Sheet,
-  SheetContent,
-} from "./components/ui/sheet";
+import { Sheet, SheetContent } from "./components/ui/sheet";
 import { useState } from "react";
-import ContainerDrawer from "./components/container-drawer";
+import DrawerHeader from "./components/drawer-header";
+import DrawerDetails from "./components/drawer-details";
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
-  const { containers, loading, refresh, selectedContainer, setSelectedContainer } = useContainerContext();
-  
-  
+  const {
+    containers,
+    loading,
+    refresh,
+    selectedContainer,
+    setSelectedContainer,
+  } = useContainerContext();
 
   return (
     <div className="bg-primary w-screen h-screen">
@@ -55,7 +57,7 @@ export default function App() {
                 key={container.id}
                 container={container}
                 onOpen={() => {
-                  setSelectedContainer((container));
+                  setSelectedContainer(container);
                   setIsOpen(true);
                 }}
               />
@@ -63,9 +65,13 @@ export default function App() {
           </TableBody>
         </Table>
       </main>
-      <Sheet open={isOpen} onOpenChange={setIsOpen} >
-        <SheetContent className="w-3/5 bg-primary border-l border-[#333332]" showCloseButton={false}>
-          <ContainerDrawer selectedContainer={selectedContainer} />
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent
+          className="w-2/5 bg-primary border-l border-[#333332]"
+          showCloseButton={false}
+        >
+          <DrawerHeader id={selectedContainer?.id || ""} />
+          <DrawerDetails />
         </SheetContent>
       </Sheet>
     </div>

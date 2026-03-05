@@ -1,13 +1,16 @@
-import { Container } from "@/lib/types";
 import { SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Badge } from "./ui/badge";
-import ContainerAction from "./container-actions";
+import DrawerActions from "./drawer-actions";
+import { useEffect } from "react";
+import { useContainerContext } from "@/store/container-context";
 
-export default function ContainerDrawer({
-  selectedContainer,
-}: {
-  selectedContainer: Container;
-}) {
+export default function DrawerHeader({ id }: { id: string }) {
+  const { selectedContainer, fetchContainerDetails } = useContainerContext();
+
+  useEffect(() => {
+    if (id) fetchContainerDetails(id);
+  }, [id]);
+
   return (
     <SheetHeader className="border-b border-b-[#333332]">
       <div className="flex flex-row justify-between items-center">
@@ -16,7 +19,7 @@ export default function ContainerDrawer({
             {selectedContainer?.name || "Container Details"}
           </SheetTitle>
           <SheetDescription className="text-[#737373] text-lg">
-            {selectedContainer?.image || "No imag`e specified"}
+            {selectedContainer?.image || "No image specified"}
           </SheetDescription>
         </div>
         <Badge
@@ -25,6 +28,7 @@ export default function ContainerDrawer({
           • {selectedContainer?.state === "running" ? "Running" : "Stopped"}
         </Badge>
       </div>
+      {selectedContainer && <DrawerActions container={selectedContainer} />}
     </SheetHeader>
   );
 }

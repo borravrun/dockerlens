@@ -1,13 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Container, ContainerActions } from "./types";
+import { AppContainer, ContainerActions, ContainerDetails } from "./types";
 
-export async function listenContainers(): Promise<Container[]> {
-  const connections = (await invoke("list_containers")) as Container[];
-  console.log(connections);
-  return connections;
+export async function getContainers(): Promise<AppContainer[]> {
+  return (await invoke("list_containers")) as AppContainer[];
 }
 
-export async function container_action({ id, action }: ContainerActions) {
-  const res = await invoke("container_action", { id, action });
-  return res;
+export async function containerAction({ id, action }: ContainerActions) {
+  return await invoke("container_action", { id, action });
+}
+
+export async function getContainer(id: string): Promise<ContainerDetails> {
+  return (await invoke("get_container", { id })) as ContainerDetails;
 }

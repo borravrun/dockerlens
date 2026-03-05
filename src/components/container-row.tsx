@@ -1,4 +1,4 @@
-import { Container } from "@/lib/types";
+import { AppContainer } from "@/lib/types";
 import { TableCell, TableRow } from "./ui/table";
 import ContainerAction from "./container-actions";
 
@@ -6,7 +6,7 @@ export default function ContainerRow({
   container,
   onOpen,
 }: {
-  container: Container;
+  container: AppContainer;
   onOpen: () => void;
 }) {
   return (
