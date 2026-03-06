@@ -15,7 +15,7 @@ const ContainerAction = memo(function ContainerAction({
 
   function onClick(e: MouseEvent, containerActions: ContainerActions) {
     e.stopPropagation();
-    action(containerActions);
+    action(containerActions).catch(console.error);
   }
 
   return (

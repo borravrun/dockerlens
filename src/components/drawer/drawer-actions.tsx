@@ -14,7 +14,7 @@ const DrawerActions = memo(function DrawerActions({
   const { loading } = useContainerList();
 
   function onClick(containerActions: ContainerActions) {
-    action(containerActions);
+    action(containerActions).catch(console.error);
   }
 
   return (

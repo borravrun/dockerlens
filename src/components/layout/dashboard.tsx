@@ -18,9 +18,9 @@ export default function Dashboard() {
   );
 
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <Header />
-      <main className="px-12 pt-4">
+      <main className="flex-1 overflow-auto px-12 pt-4">
         <ContainerTable onSelectContainer={handleSelectContainer} />
       </main>
       <ContainerDrawer
@@ -28,6 +28,6 @@ export default function Dashboard() {
         open={isOpen}
         onOpenChange={setIsOpen}
       />
-    </>
+    </div>
   );
 }

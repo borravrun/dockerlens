@@ -1,10 +1,12 @@
 use bollard::Docker;
+use bollard::models::EventMessageTypeEnum;
 use bollard::query_parameters::EventsOptions;
 use futures_util::StreamExt;
 use std::collections::HashMap;
 use tauri::{AppHandle, Emitter};
 
 use super::containers::list_containers;
+use super::images::list_images;
 
 pub async fn listen_docker_events(docker: Docker, app: AppHandle) {
     loop {
@@ -23,9 +25,14 @@ pub async fn listen_docker_events(docker: Docker, app: AppHandle) {
             let _ = app.emit("containers-changed", &containers);
         }
 
+        // Send current image list
+        if let Ok(images) = list_images(&docker).await {
+            let _ = app.emit("images-changed", &images);
+        }
+
         // Subscribe to Docker events
         let mut filters = HashMap::new();
-        filters.insert("type".to_string(), vec!["container".to_string()]);
+        filters.insert("type".to_string(), vec!["container".to_string(), "image".to_string()]);
 
         let options = EventsOptions {
             filters: Some(filters),
@@ -38,13 +45,24 @@ pub async fn listen_docker_events(docker: Docker, app: AppHandle) {
             match event {
                 Ok(ev) => {
                     let action = ev.action.unwrap_or_default();
-                    match action.as_str() {
-                        "start" | "stop" | "die" | "kill" | "pause" | "unpause"
-                        | "destroy" | "create" | "rename" | "restart" => {
-                            if let Ok(containers) = list_containers(&docker).await {
-                                let _ = app.emit("containers-changed", &containers);
+                    match ev.typ {
+                        Some(EventMessageTypeEnum::CONTAINER) => match action.as_str() {
+                            "start" | "stop" | "die" | "kill" | "pause" | "unpause"
+                            | "destroy" | "create" | "rename" | "restart" => {
+                                if let Ok(containers) = list_containers(&docker).await {
+                                    let _ = app.emit("containers-changed", &containers);
+                                }
                             }
-                        }
+                            _ => {}
+                        },
+                        Some(EventMessageTypeEnum::IMAGE) => match action.as_str() {
+                            "pull" | "delete" | "untag" | "tag" | "import" => {
+                                if let Ok(images) = list_images(&docker).await {
+                                    let _ = app.emit("images-changed", &images);
+                                }
+                            }
+                            _ => {}
+                        },
                         _ => {}
                     }
                 }

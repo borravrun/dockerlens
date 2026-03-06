@@ -30,6 +30,14 @@ export interface LogEntry {
   message: string;
 }
 
+export interface AppImage {
+  id: string;
+  tags: string[];
+  size: number;
+  created: number;
+  containers: number;
+}
+
 export interface ContainerStats {
   cpu_percent: number;
   memory_usage: number;

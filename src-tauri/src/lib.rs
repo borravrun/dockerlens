@@ -6,6 +6,7 @@ use tokio::sync::{Mutex, Notify};
 mod docker;
 use docker::containers::{AppContainer, ContainerDetails};
 use docker::events::listen_docker_events;
+use docker::images::AppImage;
 use docker::logs::stream_container_logs;
 use docker::stats::stream_container_stats;
 
@@ -13,6 +14,7 @@ pub struct AppState {
     pub docker: Docker,
     pub log_cancel: Arc<Mutex<Option<Arc<Notify>>>>,
     pub stats_cancel: Arc<Mutex<Option<Arc<Notify>>>>,
+    pub pull_cancel: Arc<Mutex<Option<Arc<Notify>>>>,
 }
 
 async fn replace_cancel_token(token: &Arc<Mutex<Option<Arc<Notify>>>>) -> Arc<Notify> {
@@ -50,6 +52,35 @@ async fn get_container(
     id: String,
 ) -> Result<ContainerDetails, String> {
     docker::containers::get_container(&state.docker, id).await
+}
+
+#[tauri::command]
+async fn list_images(state: State<'_, AppState>) -> Result<Vec<AppImage>, String> {
+    docker::images::list_images(&state.docker).await
+}
+
+#[tauri::command]
+async fn run_image(state: State<'_, AppState>, image: String) -> Result<String, String> {
+    docker::images::run_image(&state.docker, image).await
+}
+
+#[tauri::command]
+async fn delete_image(state: State<'_, AppState>, id: String) -> Result<(), String> {
+    docker::images::delete_image(&state.docker, id).await
+}
+
+#[tauri::command]
+async fn pull_image(
+    state: State<'_, AppState>,
+    app: AppHandle,
+    image: String,
+) -> Result<(), String> {
+    let cancel = replace_cancel_token(&state.pull_cancel).await;
+    let docker = state.docker.clone();
+    tauri::async_runtime::spawn(async move {
+        docker::images::pull_image(docker, app, image, cancel).await;
+    });
+    Ok(())
 }
 
 #[tauri::command]
@@ -97,12 +128,13 @@ pub fn run() {
                 docker,
                 log_cancel: Arc::new(Mutex::new(None)),
                 stats_cancel: Arc::new(Mutex::new(None)),
+                pull_cancel: Arc::new(Mutex::new(None)),
             });
 
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![check_docker, list_containers, container_action, get_container, stream_logs, stream_stats])
+        .invoke_handler(tauri::generate_handler![check_docker, list_containers, list_images, run_image, delete_image, pull_image, container_action, get_container, stream_logs, stream_stats])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -16,17 +16,24 @@ export default function DrawerLogs({ id }: { id: string }) {
     setLogs([]);
 
     let unlisten: (() => void) | null = null;
+    let cancelled = false;
 
     const setup = async () => {
-      unlisten = await listen<LogEntry>("container-logs", (event) => {
-        setLogs((prev) => [...prev, event.payload]);
+      const fn = await listen<LogEntry>("container-logs", (event) => {
+        setLogs((prev) => {
+          const next = [...prev, event.payload];
+          return next.length > 5000 ? next.slice(-5000) : next;
+        });
       });
+      if (cancelled) { fn(); return; }
+      unlisten = fn;
       await streamLogs(id);
     };
 
     setup();
 
     return () => {
+      cancelled = true;
       unlisten?.();
     };
   }, [id, containerState]);

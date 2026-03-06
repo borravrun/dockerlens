@@ -26,20 +26,25 @@ export function useContainerStats(id: string) {
     statsRef.current = [];
 
     let unlisten: (() => void) | null = null;
+    let cancelled = false;
 
     const setup = async () => {
-      unlisten = await listen<ContainerStats>("container-stats", (event) => {
+      const fn = await listen<ContainerStats>("container-stats", (event) => {
         const stat = event.payload;
         setLatest(stat);
-        statsRef.current = [...statsRef.current.slice(-(MAX_DATA_POINTS - 1)), stat];
-        setStats([...statsRef.current]);
+        const next = [...statsRef.current.slice(-(MAX_DATA_POINTS - 1)), stat];
+        statsRef.current = next;
+        setStats(next);
       });
+      if (cancelled) { fn(); return; }
+      unlisten = fn;
       await streamStats(id);
     };
 
     setup();
 
     return () => {
+      cancelled = true;
       unlisten?.();
     };
   }, [id, containerState]);

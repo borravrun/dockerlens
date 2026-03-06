@@ -1,5 +1,6 @@
 import { FiRefreshCcw, FiSearch, FiX } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useContainerList } from "@/hooks";
 import { useRef } from "react";
 
@@ -8,12 +9,12 @@ export default function Header() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <header className="flex items-center justify-between px-12 py-6 border-b border-[#333332]">
+    <header className="flex items-center justify-between px-6 py-6 border-b border-[#333332]">
       <div className="flex gap-3 items-center">
-        <span className="text-[#E8E8E6] text-xl font-bold">Dockerlens</span>
+        <SidebarTrigger className="text-[#6B6B6B] hover:text-[#E8E8E6] hover:bg-transparent size-5 cursor-pointer" />
         <span className="text-[#6B6B6B] text-xl">/</span>
         <span className="text-[#6B6B6B] text-xl">
-          local container ({containers.length})
+          containers ({containers.length})
         </span>
       </div>
       <div className="flex items-center gap-2">

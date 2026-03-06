@@ -16,12 +16,7 @@ const memoryChartConfig = {
   memory_percent: { label: "Memory %", color: "#8b5cf6" },
 } satisfies ChartConfig;
 
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
-}
+import { formatBytes } from "@/lib/utils";
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
