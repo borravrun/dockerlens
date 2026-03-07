@@ -71,8 +71,8 @@ src-tauri/src/        # Rust backend
 - [x] Live log streaming
 - [x] Resource stats with charts
 - [x] Docker engine status detection
-- [ ] Container search / filter
-- [ ] Images management
+- [x] Container search / filter
+- [x] Images management
 - [ ] Volumes & networks management
 - [ ] Container terminal
 - [ ] Docker Compose project grouping
